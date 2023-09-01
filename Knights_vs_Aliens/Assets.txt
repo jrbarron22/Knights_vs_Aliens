@@ -1,0 +1,5 @@
+﻿Content/PhuduFont/Phudu-VariableFont_wght.ttf created by Dương Trần (https://fonts.google.com/specimen/Phudu) released on Google Fonts under the Open Font License
+
+Content/Castle.png created by Max Scofield and gave me verbal permission to use it
+
+Alien Orb, Alien Tube, and Sword are all created by Joshua Barron for the use of this project

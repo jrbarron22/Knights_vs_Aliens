@@ -1,3 +1,3 @@
 ﻿
-using var game = new Knights_vs_Aliens.Game1();
+using var game = new Knights_vs_Aliens.KvA_Game();
 game.Run();
