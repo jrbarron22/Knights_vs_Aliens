@@ -3,24 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CollisionExample.Collisions;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace Knights_vs_Aliens
+namespace Knights_vs_Aliens.Sprites
 {
-    public enum Direction
-    {
-        Down,
-        Right,
-        Up,
-        Left
-    }
-    public class AlienOrbSprite
+    public class AlienProjectile
     {
         private Texture2D texture;
-
-        private double directionTimer;
 
         private double animationTimer;
 
@@ -28,9 +20,23 @@ namespace Knights_vs_Aliens
 
         private short curAnimationFrame = 2;
 
-        public Direction Direction;
-
         public Vector2 Position;
+
+        public Vector2 VelocityDirection;
+
+        private const float PROJECTILE_SPEED = 90;
+
+        public BoundingCircle bounds;
+
+        public bool hasCollided;
+
+        public AlienProjectile(Vector2 position, Vector2 velocity)
+        {
+            Position = position;
+            VelocityDirection = Vector2.Normalize(velocity);
+            bounds.Center = new Vector2(position.X + 16, position.Y + 8);
+            bounds.Radius = 8;
+        }
 
         public void LoadContent(ContentManager content)
         {
@@ -39,36 +45,13 @@ namespace Knights_vs_Aliens
 
         public void Update(GameTime gameTime)
         {
-            //Update Direction Timer
-            directionTimer += gameTime.ElapsedGameTime.TotalSeconds;
-
-            //Switch Timer every 2 seconds
-            if (directionTimer > 2.0)
-            {
-                switch (Direction)
-                {
-                    case Direction.Up:
-                        Direction = Direction.Down;
-                        break;
-                    case Direction.Down:
-                        Direction = Direction.Up;
-                        break;
-                }
-                directionTimer -= 2.0;
-            }
-
-            switch (Direction)
-            {
-                case Direction.Up:
-                    Position += new Vector2(0, -1) * 100 * (float)gameTime.ElapsedGameTime.TotalSeconds;
-                    break;
-                case Direction.Down:
-                    Position += new Vector2(0, 1) * 100 * (float)gameTime.ElapsedGameTime.TotalSeconds;
-                    break;
-            }
+            Position += new Vector2(VelocityDirection.X * PROJECTILE_SPEED * (float)gameTime.ElapsedGameTime.TotalSeconds, VelocityDirection.Y * PROJECTILE_SPEED * (float)gameTime.ElapsedGameTime.TotalSeconds) ;
+            bounds.Center = new Vector2(Position.X + 16, Position.Y + 8);
         }
+
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
+            if (hasCollided) return;
             //Update animation timer
             animationTimer += gameTime.ElapsedGameTime.TotalSeconds;
 
@@ -114,11 +97,35 @@ namespace Knights_vs_Aliens
             }
 
             //Draw the sprite
-            float rotation;
-            if (Direction == Direction.Down) rotation = (float)Math.PI;
-            else rotation = 0;
+            float rotation = getRotationAngle();
             var source = new Rectangle((int)spriteOrigin.X, (int)spriteOrigin.Y, 32, 32);
-            spriteBatch.Draw(texture, Position, source, Color.White, rotation, new Vector2(16, 16), 1.5f, SpriteEffects.None, 0);
+            spriteBatch.Draw(texture, Position, source, Color.White, rotation, new Vector2(16, 16), 1f, SpriteEffects.None, 0);
+        }
+
+        private float getRotationAngle()
+        {
+            if(VelocityDirection.Y >= 0 && VelocityDirection.X > 0)
+            {
+                return ((float)Math.PI / 2) + (float)Math.Cos(1 / (getVectorMagnitude(VelocityDirection)));
+            }
+            else if(VelocityDirection.Y >= 0 && VelocityDirection.X < 0)
+            {
+                return ((float)Math.PI) + (float)Math.Cos(1 / (getVectorMagnitude(VelocityDirection)));
+            }
+            else if(VelocityDirection.Y <= 0 && VelocityDirection.X > 0)
+            {
+                return (float)Math.Cos(1/ (getVectorMagnitude(VelocityDirection)));
+            }
+            else
+            {
+                return ((float)Math.PI * (3/2)) + (float)Math.Cos(1 / (getVectorMagnitude(VelocityDirection)));
+            }
+
+        }
+
+        private double getVectorMagnitude(Vector2 vector)
+        {
+            return Math.Sqrt(Math.Pow(vector.X, 2) + Math.Pow(vector.Y, 2));
         }
     }
 }
