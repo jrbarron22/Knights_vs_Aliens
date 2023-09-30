@@ -13,6 +13,12 @@
 
 #---------------------------------- Content ---------------------------------#
 
+#begin Aldous Ichnite - The Rise of the 3D Accelerator.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Aldous Ichnite - The Rise of the 3D Accelerator.mp3
+
 #begin Alien Orb.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -49,6 +55,18 @@
 /processorParam:TextureFormat=Color
 /build:Alien Turret.png
 
+#begin ball.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:ball.png
+
 #begin Castle.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -60,6 +78,24 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Castle.png
+
+#begin Debug_Rectangle.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Debug_Rectangle.png
+
+#begin Denys Kyshchuk - Wide Flower Fields.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Denys Kyshchuk - Wide Flower Fields.mp3
 
 #begin Dungeon_Tileset.png
 /importer:TextureImporter
@@ -85,6 +121,12 @@
 /processorParam:TextureFormat=Color
 /build:Key.png
 
+#begin Knight_Hit.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Knight_Hit.wav
+
 #begin Knight.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -97,12 +139,42 @@
 /processorParam:TextureFormat=Color
 /build:Knight.png
 
+#begin Laser_Powering.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Laser_Powering.wav
+
+#begin Laser_Shoot.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Laser_Shoot.wav
+
 #begin phudu.spritefont
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor
 /processorParam:PremultiplyAlpha=True
 /processorParam:TextureFormat=Compressed
 /build:phudu.spritefont
+
+#begin Pickup_Key.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Pickup_Key.wav
+
+#begin Spear.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Spear.png
 
 #begin Sword.png
 /importer:TextureImporter

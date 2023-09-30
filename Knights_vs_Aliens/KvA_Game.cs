@@ -7,6 +7,7 @@ using System.Drawing.Drawing2D;
 
 namespace Knights_vs_Aliens
 {
+    public delegate void quitGame();
     public class KvA_Game : Game
     {
         private GraphicsDeviceManager _graphics;
@@ -19,13 +20,14 @@ namespace Knights_vs_Aliens
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
+            _graphics.IsFullScreen = true;
         }
 
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
             
-            screenManager = new ScreenManager(GraphicsDevice, Content);
+            screenManager = new ScreenManager(GraphicsDevice, Content, new quitGame(Quit));
             
             base.Initialize();
         }
@@ -40,9 +42,7 @@ namespace Knights_vs_Aliens
 
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
-
+            if (Keyboard.GetState().IsKeyDown(Keys.CapsLock)) Exit();
             // TODO: Add your update logic here
             screenManager.Update(gameTime);
            
@@ -57,6 +57,11 @@ namespace Knights_vs_Aliens
             spriteBatch.End();
 
             base.Draw(gameTime);
+        }
+
+        private void Quit()
+        {
+            this.Exit();
         }
     }
 }

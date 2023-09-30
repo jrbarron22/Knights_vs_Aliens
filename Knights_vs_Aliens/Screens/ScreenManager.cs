@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Media;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Knights_vs_Aliens.Screens
 {
-    public delegate void switchScreen();
+    public delegate void switchScreen(int index);
 
     public class ScreenManager
     {
@@ -24,27 +25,40 @@ namespace Knights_vs_Aliens.Screens
 
         private KnightSprite knight;
 
-        public ScreenManager(GraphicsDevice graphics, ContentManager content)
+        private quitGame exitGame;
+
+        private Song titleMusic;
+        private Song gameplayMusic;
+
+        public ScreenManager(GraphicsDevice graphics, ContentManager content, quitGame quit)
         {
             this.graphics = graphics;
             this.content = content;
+            exitGame = quit;
             Initialize();
         }
 
         private void Initialize()
         {
+            //TODO: Make Screens an enum
             knight = new KnightSprite();
-            screens = new IScreen[2];
-            screens[0] = new TitleMenu(new switchScreen(SwitchScreen));
-            screens[1] = new OpeningRoom(graphics, knight, content);
-            curIndex = 0;
-            curScreen = screens[curIndex];
-            foreach (IScreen screen in screens) screen.LoadContent(graphics, content);
+            screens = new IScreen[3];
+
+            screens[0] = new TitleMenu(new switchScreen(SwitchScreen), exitGame);
+            screens[1] = new PauseMenu(new switchScreen(SwitchScreen));
+            screens[2] = new OpeningRoom(graphics, knight, content, new switchScreen(SwitchScreen));
+            
+            curScreen = screens[0];
         }
 
         public void LoadContent(GraphicsDevice graphics, ContentManager content)
         {
+            foreach (IScreen screen in screens) screen.LoadContent(graphics, content);
             knight.LoadContent(content);
+            titleMusic = content.Load<Song>("Denys Kyshchuk - Wide Flower Fields");
+            gameplayMusic = content.Load<Song>("Aldous Ichnite - The Rise of the 3D Accelerator");
+            MediaPlayer.IsRepeating = true;
+            MediaPlayer.Play(titleMusic);
         }
 
         public void Update(GameTime gameTime)
@@ -57,9 +71,18 @@ namespace Knights_vs_Aliens.Screens
             curScreen.Draw(gameTime, spriteBatch, graphics);
         }
 
-        private void SwitchScreen()
+        private void SwitchScreen(int index)
         {
-            curScreen = screens[curIndex++];
+            curScreen = screens[index];
+            MediaPlayer.Stop();
+            if (index == 0)
+            {
+                MediaPlayer.Play(titleMusic);
+            }
+            if(index == 2)
+            {
+                MediaPlayer.Play(gameplayMusic);
+            }
         }
     }
 }

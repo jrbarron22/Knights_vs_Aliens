@@ -10,6 +10,7 @@ using Microsoft.Xna.Framework;
 using Knights_vs_Aliens.Sprites;
 using Knights_vs_Aliens.Sprites.Enemies;
 using CollisionExample.Collisions;
+using Microsoft.Xna.Framework.Audio;
 
 namespace Knights_vs_Aliens.Screens
 {
@@ -24,32 +25,36 @@ namespace Knights_vs_Aliens.Screens
         private AlienTurret[] turrets;
 
         private Texture2D backgroundLeft;
-
         private Texture2D backgroundRight;
 
+        private SoundEffect keyPickup;
+        private SoundEffect knightHit;
+
         private BoundingRectangle topBounds;
-
         private BoundingRectangle bottomBounds;
-
         private BoundingRectangle leftBounds;
-
         private BoundingRectangle rightBounds;
 
-        public OpeningRoom(GraphicsDevice graphics, KnightSprite knight, ContentManager content)
+        private switchScreen pause;
+
+        public OpeningRoom(GraphicsDevice graphics, KnightSprite knight, ContentManager content, switchScreen swapScreen)
         {
             Random rand = new Random();
             this.knight = knight;
+            pause = swapScreen;
+
             keys = new KeySprite[]
             {
-                new KeySprite(new Vector2(400, 300), Color.Purple),
-                new KeySprite(new Vector2(200, 300), Color.Aqua),
-                new KeySprite(new Vector2(600, 300), Color.Orange)
+                new KeySprite(new Vector2(325, 300), Color.Purple),
+                new KeySprite(new Vector2(150, 300), Color.Aqua),
+                new KeySprite(new Vector2(500, 300), Color.Orange)
             };
 
             turrets = new AlienTurret[]
             {
-                new AlienTurret(new Vector2((float)rand.NextDouble() * graphics.Viewport.Width, (float)rand.NextDouble() * graphics.Viewport.Height), content),
-                new AlienTurret(new Vector2((float)rand.NextDouble() * graphics.Viewport.Width, (float)rand.NextDouble() * graphics.Viewport.Height), content)
+                //TODO: Change to fixed positions at some point
+                new AlienTurret(new Vector2(300, 150), content),
+                new AlienTurret(new Vector2(400, 400), content)
             };
         }
         public void LoadContent(GraphicsDevice graphics, ContentManager content)
@@ -58,14 +63,19 @@ namespace Knights_vs_Aliens.Screens
             backgroundRight = content.Load<Texture2D>("Dungeon_Tileset");
             foreach (var key in keys) key.LoadContent(content);
             foreach (var turret in turrets) turret.LoadContent();
-            topBounds = new BoundingRectangle(0, 0, graphics.Viewport.Width, 30);
-            leftBounds = new BoundingRectangle(0, 0, 30, graphics.Viewport.Height);
-            bottomBounds = new BoundingRectangle(0, graphics.Viewport.Height - 50, graphics.Viewport.Width, 30);
+            keyPickup = content.Load<SoundEffect>("Pickup_Key");
+            knightHit = content.Load<SoundEffect>("Knight_Hit");
+
+            //Walls
+            topBounds = new BoundingRectangle(0, 0, graphics.Viewport.Width, 70);
+            leftBounds = new BoundingRectangle(0, 0, 40, graphics.Viewport.Height);
+            bottomBounds = new BoundingRectangle(0, graphics.Viewport.Height - 50, graphics.Viewport.Width, 50);
             rightBounds = new BoundingRectangle(graphics.Viewport.Width - 45, 0, 45, graphics.Viewport.Height);
         }
 
         public void Update(GameTime gameTime)
         {
+            if (Keyboard.GetState().IsKeyDown(Keys.Escape)) pause(1);
             knight.Update(gameTime);
             knight.color = Color.White;
             if (topBounds.CollidesWith(knight.Bounds))
@@ -88,6 +98,7 @@ namespace Knights_vs_Aliens.Screens
                 if (!key.Collected && key.Bounds.CollidesWith(knight.Bounds))
                 {
                     key.Collected = true;
+                    keyPickup.Play();
                 }
                 key.Update(gameTime);
             }
@@ -100,6 +111,7 @@ namespace Knights_vs_Aliens.Screens
                     {
                         projectile.hasCollided = true;
                         knight.color = Color.Red;
+                        knightHit.Play();
                     }
                 }
             }
@@ -109,10 +121,20 @@ namespace Knights_vs_Aliens.Screens
         {
             graphics.Clear(Color.Black);
             spriteBatch.Draw(backgroundLeft, new Vector2(0, 0), new Rectangle(10, 0, 68, 70), Color.White, 0, new Vector2(0, 0), graphics.Viewport.Height / 65, SpriteEffects.None, 0);
-            spriteBatch.Draw(backgroundRight, new Vector2(graphics.Viewport.Width / 2, 0), new Rectangle(30, 0, 68, 70), Color.White, 0, new Vector2(0, 0), graphics.Viewport.Height / 65, SpriteEffects.None, 0);
-            knight.Draw(gameTime, spriteBatch);
+            spriteBatch.Draw(backgroundRight, new Vector2(graphics.Viewport.Width / 2, 0), new Rectangle(40, 0, 68, 70), Color.White, 0, new Vector2(0, 0), graphics.Viewport.Height / 65, SpriteEffects.None, 0);
+            knight.Draw(gameTime, spriteBatch, graphics);
             foreach (var key in keys) key.Draw(gameTime, spriteBatch);
             foreach (var turret in turrets) turret.Draw(gameTime, spriteBatch);
+
+            //Debugging
+            /*
+            Texture2D blankTexture = new Texture2D(graphics, 1, 1);
+            blankTexture.SetData(new Color[] { Color.DarkSlateGray });
+            spriteBatch.Draw(blankTexture, new Vector2(topBounds.X, topBounds.Y), topBounds.Bounds(), Color.White);
+            spriteBatch.Draw(blankTexture, new Vector2(leftBounds.X, leftBounds.Y), leftBounds.Bounds(), Color.White);
+            spriteBatch.Draw(blankTexture, new Vector2(rightBounds.X, rightBounds.Y), rightBounds.Bounds(), Color.White);
+            spriteBatch.Draw(blankTexture, new Vector2(bottomBounds.X, bottomBounds.Y), bottomBounds.Bounds(), Color.White);
+            */
         }
     }
 }

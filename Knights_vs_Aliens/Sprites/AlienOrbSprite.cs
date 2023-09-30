@@ -9,13 +9,6 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Knights_vs_Aliens.Sprites
 {
-    public enum Direction
-    {
-        Down,
-        Right,
-        Up,
-        Left
-    }
     public class AlienOrbSprite
     {
         private Texture2D texture;

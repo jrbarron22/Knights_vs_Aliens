@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Audio;
 
 namespace Knights_vs_Aliens.Sprites.Enemies
 {
@@ -23,6 +24,8 @@ namespace Knights_vs_Aliens.Sprites.Enemies
 
         private ContentManager content;
 
+        private SoundEffect laserShot;
+
         public List<AlienProjectile> projectiles = new List<AlienProjectile>();
 
         public AlienTurret(Vector2 position, ContentManager content)
@@ -34,6 +37,7 @@ namespace Knights_vs_Aliens.Sprites.Enemies
         public void LoadContent()
         {
             texture = content.Load<Texture2D>("Alien Turret");
+            laserShot = content.Load<SoundEffect>("Laser_Shoot");
         }
 
         public void Update(GameTime gameTime, Vector2 knightPosition)
@@ -69,6 +73,7 @@ namespace Knights_vs_Aliens.Sprites.Enemies
         //Don't want bullets tied to turrets in long run
         private void Shoot(Vector2 knightPosition)
         {
+            laserShot.Play();
             AlienProjectile newProjectile = new AlienProjectile(new Vector2(Position.X + 16, Position.Y + 4), knightPosition - Position);
             newProjectile.LoadContent(content);
             projectiles.Add(newProjectile);

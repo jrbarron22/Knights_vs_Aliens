@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
+using SharpDX.Direct3D9;
 
 namespace CollisionExample.Collisions
 {
@@ -30,6 +31,7 @@ namespace CollisionExample.Collisions
 
         public float Bottom => Y + Height;
 
+
         public BoundingRectangle(float x, float y, float width, float height)
         {
             X = x;
@@ -54,6 +56,11 @@ namespace CollisionExample.Collisions
         public bool CollidesWith(BoundingCircle other)
         {
             return CollisionHelper.Collides(other, this);
+        }
+
+        public Rectangle Bounds()
+        {
+            return new Rectangle((int)X, (int)Y, (int)Width, (int)Height);
         }
     }
 }

@@ -26,6 +26,7 @@ namespace Knights_vs_Aliens.Screens
         private KeyboardState prevKeyboardState;
 
         private switchScreen startPressed;
+        private quitGame exit;
 
         private menuOptions curMenuOption = menuOptions.StartGame;
 
@@ -37,9 +38,10 @@ namespace Knights_vs_Aliens.Screens
         private Texture2D castle;
         private Texture2D sword;
 
-        public TitleMenu(switchScreen changeScreen)
+        public TitleMenu(switchScreen changeScreen, quitGame exit)
         {
             startPressed = changeScreen;
+            this.exit = exit;
         }
 
         public void LoadContent(GraphicsDevice graphics, ContentManager content)
@@ -63,9 +65,13 @@ namespace Knights_vs_Aliens.Screens
 
             foreach (var orb in alienOrbs) orb.Update(gameTime);
 
-            if((curMenuOption == menuOptions.StartGame) && ((curKeyboardState.IsKeyDown(Keys.Space) || (curKeyboardState.IsKeyDown(Keys.Enter)))))
+            if((curMenuOption == menuOptions.StartGame) && (((curKeyboardState.IsKeyDown(Keys.Space) && prevKeyboardState.IsKeyUp(Keys.Space)) || ((curKeyboardState.IsKeyDown(Keys.Enter)) && prevKeyboardState.IsKeyUp(Keys.Enter)))))
             {
-                startPressed();
+                startPressed(2);
+            }
+            else if ((curMenuOption == menuOptions.Exit) && (((curKeyboardState.IsKeyDown(Keys.Space) && prevKeyboardState.IsKeyUp(Keys.Space)) || ((curKeyboardState.IsKeyDown(Keys.Enter)) && prevKeyboardState.IsKeyUp(Keys.Enter)))))
+            {
+                exit();
             }
 
             if (curKeyboardState.IsKeyDown(Keys.W) && prevKeyboardState.IsKeyUp(Keys.W))
@@ -133,8 +139,8 @@ namespace Knights_vs_Aliens.Screens
             spriteBatch.Draw(sword, new Vector2(graphics.Viewport.Width / 2 - 128, 175), null, Color.White, 0, new Vector2(8, 8), 2.0f, SpriteEffects.None, 0);
 
             //Draw Exit Instructions
-            spriteLength = phudu.MeasureString("Press 'Space' or 'Exit' on the Exit button to exit the game");
-            spriteBatch.DrawString(phudu, "Press 'Space' or 'Exit' on the Exit button to exit the game", new Vector2(graphics.Viewport.Width / 2, graphics.Viewport.Height - 50), Color.Black, 0, new Vector2(spriteLength.X / 2, spriteLength.Y / 2), 0.4f, SpriteEffects.None, 0);
+            spriteLength = phudu.MeasureString("Press 'Space' on the Exit button to exit the game");
+            spriteBatch.DrawString(phudu, "Press 'Space' on the Exit button to exit the game", new Vector2(graphics.Viewport.Width / 2, graphics.Viewport.Height - 50), Color.Black, 0, new Vector2(spriteLength.X / 2, spriteLength.Y / 2), 0.4f, SpriteEffects.None, 0);
 
         }
     }

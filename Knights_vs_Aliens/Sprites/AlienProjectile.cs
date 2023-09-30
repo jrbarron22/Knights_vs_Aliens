@@ -30,6 +30,8 @@ namespace Knights_vs_Aliens.Sprites
 
         public bool hasCollided;
 
+        private Texture2D debugCircle;
+
         public AlienProjectile(Vector2 position, Vector2 velocity)
         {
             Position = position;
@@ -41,12 +43,13 @@ namespace Knights_vs_Aliens.Sprites
         public void LoadContent(ContentManager content)
         {
             texture = content.Load<Texture2D>("Alien Orb");
+            debugCircle = content.Load<Texture2D>("ball");
         }
 
         public void Update(GameTime gameTime)
         {
             Position += new Vector2(VelocityDirection.X * PROJECTILE_SPEED * (float)gameTime.ElapsedGameTime.TotalSeconds, VelocityDirection.Y * PROJECTILE_SPEED * (float)gameTime.ElapsedGameTime.TotalSeconds) ;
-            bounds.Center = new Vector2(Position.X + 16, Position.Y + 8);
+            bounds.Center = new Vector2(Position.X, Position.Y);
         }
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
@@ -100,6 +103,14 @@ namespace Knights_vs_Aliens.Sprites
             float rotation = getRotationAngle();
             var source = new Rectangle((int)spriteOrigin.X, (int)spriteOrigin.Y, 32, 32);
             spriteBatch.Draw(texture, Position, source, Color.White, rotation, new Vector2(16, 16), 1f, SpriteEffects.None, 0);
+
+            //Draw DebugCircle
+            /*
+            var rect = new Rectangle((int)bounds.Center.X - (int)bounds.Radius,
+                                    (int)bounds.Center.Y - (int)bounds.Radius,
+                                    (int)2 * (int)bounds.Radius, (int)2 * (int)bounds.Radius);
+            spriteBatch.Draw(debugCircle, rect, Color.Red);
+            */
         }
 
         private float getRotationAngle()
