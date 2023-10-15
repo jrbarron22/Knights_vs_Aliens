@@ -20,14 +20,14 @@ namespace Knights_vs_Aliens
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
-            _graphics.IsFullScreen = true;
+            _graphics.IsFullScreen = false;
         }
 
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
             
-            screenManager = new ScreenManager(GraphicsDevice, Content, new quitGame(Quit));
+            screenManager = new ScreenManager(this, GraphicsDevice, Content, new quitGame(Quit));
             
             base.Initialize();
         }
@@ -52,9 +52,7 @@ namespace Knights_vs_Aliens
         protected override void Draw(GameTime gameTime)
         {
             // TODO: Add your drawing code here
-            spriteBatch.Begin();
             screenManager.Draw(gameTime, spriteBatch);
-            spriteBatch.End();
 
             base.Draw(gameTime);
         }

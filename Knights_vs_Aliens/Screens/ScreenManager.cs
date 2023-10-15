@@ -22,6 +22,7 @@ namespace Knights_vs_Aliens.Screens
 
         private GraphicsDevice graphics;
         private ContentManager content;
+        private Game game;
 
         private KnightSprite knight;
 
@@ -30,8 +31,9 @@ namespace Knights_vs_Aliens.Screens
         private Song titleMusic;
         private Song gameplayMusic;
 
-        public ScreenManager(GraphicsDevice graphics, ContentManager content, quitGame quit)
+        public ScreenManager(Game game, GraphicsDevice graphics, ContentManager content, quitGame quit)
         {
+            this.game = game;
             this.graphics = graphics;
             this.content = content;
             exitGame = quit;
@@ -42,12 +44,13 @@ namespace Knights_vs_Aliens.Screens
         {
             //TODO: Make Screens an enum
             knight = new KnightSprite();
-            screens = new IScreen[3];
+            screens = new IScreen[4];
 
             screens[0] = new TitleMenu(new switchScreen(SwitchScreen), exitGame);
             screens[1] = new PauseMenu(new switchScreen(SwitchScreen));
-            screens[2] = new OpeningRoom(graphics, knight, content, new switchScreen(SwitchScreen));
-            
+            screens[2] = new OpeningRoom(game, graphics, knight, content, new switchScreen(SwitchScreen));
+            screens[3] = new VictoryScreen(new switchScreen(SwitchScreen));
+
             curScreen = screens[0];
         }
 
@@ -74,6 +77,10 @@ namespace Knights_vs_Aliens.Screens
         private void SwitchScreen(int index)
         {
             curScreen = screens[index];
+            if(index == 2)
+            {
+                screens[2].GameUnpaused();
+            }
             MediaPlayer.Stop();
             if (index == 0)
             {

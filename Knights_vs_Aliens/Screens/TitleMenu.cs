@@ -104,6 +104,8 @@ namespace Knights_vs_Aliens.Screens
         {
             graphics.Clear(Color.DarkGray);
             Vector2 spriteLength;
+            spriteBatch.Begin();
+
             //Draw Menu Buttons
             for (int i = 0; i < menuButtons.Length; i++)
             {
@@ -142,6 +144,9 @@ namespace Knights_vs_Aliens.Screens
             spriteLength = phudu.MeasureString("Press 'Space' on the Exit button to exit the game");
             spriteBatch.DrawString(phudu, "Press 'Space' on the Exit button to exit the game", new Vector2(graphics.Viewport.Width / 2, graphics.Viewport.Height - 50), Color.Black, 0, new Vector2(spriteLength.X / 2, spriteLength.Y / 2), 0.4f, SpriteEffects.None, 0);
 
+            spriteBatch.End();
         }
+
+        public void GameUnpaused() { }
     }
 }

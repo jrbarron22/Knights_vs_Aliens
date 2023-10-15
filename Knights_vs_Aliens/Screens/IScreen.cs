@@ -14,5 +14,6 @@ namespace Knights_vs_Aliens.Screens
         void Update(GameTime gameTime);
         void LoadContent(GraphicsDevice graphics, ContentManager content);
         void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics);
+        public void GameUnpaused();
     }
 }
