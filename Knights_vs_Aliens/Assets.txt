@@ -1,9 +1,15 @@
 ﻿Content/PhuduFont/Phudu-VariableFont_wght.ttf created by Dương Trần (https://fonts.google.com/specimen/Phudu) released on Google Fonts under the Open Font License
 
 Content/Castle.png created by Max Scofield and gave me verbal permission to use it
+
 Content/Dungeon_Tileset.png created by Pixel_Poem accessed on itch.io (https://pixel-poem.itch.io/dungeon-assetpuck), License states this asset is free to use for free and commercial projects
 
-Alien Orb, Alien Tube, and Sword are all created by Joshua Barron for the use of this project
+Drop, Circle, Particle, ball pngs all from tutorials created by Nathan Bean
+
+Content/Debug_Rectangle.png found from free for commercial use on Google
+
+All other pixel art created by Joshua Barron for the use of this project
 
 Content/TitleSong created by Denys Kyshchuk with the original title "Wide Flower Fields" from the Free Music Archive under the license type (CC BY-NC) (https://freemusicarchive.org/music/denys-kyshchuk/space-journey/wide-flower-fields/)
 Content/GameplaySong created by Aldous Ichnite with the original title "The Rise of the 3D Accelerator" from the Free Music Archive under the license type (CC BY-NC) (https://freemusicarchive.org/music/aldous-ichnite/bitmapped-dreams/the-rise-of-the-3d-accelerator/)
+All other sound effects created by Joshua Barron using the Bxfr sound creator
