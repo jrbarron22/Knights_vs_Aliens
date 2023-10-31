@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Knights_vs_Aliens.Sprites;
 using Knights_vs_Aliens.Sprites.Enemies;
-using CollisionExample.Collisions;
 using Microsoft.Xna.Framework.Audio;
 
 namespace Knights_vs_Aliens.Screens
@@ -57,7 +56,6 @@ namespace Knights_vs_Aliens.Screens
 
             turrets = new AlienTurret[]
             {
-                //TODO: Change to fixed positions at some point
                 new AlienTurret(new Vector2(300, 150), content),
                 new AlienTurret(new Vector2(400, 400), content),
                 new AlienTurret(new Vector2(900, 200), content)

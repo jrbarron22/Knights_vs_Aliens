@@ -18,7 +18,6 @@ namespace Knights_vs_Aliens.Screens
     {
         private IScreen[] screens;
         private IScreen curScreen;
-        private int curIndex;
 
         private GraphicsDevice graphics;
         private ContentManager content;
