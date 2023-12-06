@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CollisionExample.Collisions
+namespace Knights_vs_Aliens.Collisions
 {
     /// <summary>
     /// Skeleton Code sourced from the Collision Tutorial made by Nathan Bean
@@ -46,6 +46,7 @@ namespace CollisionExample.Collisions
         /// <returns>true if collision, false otherwise</returns>
         public static bool Collides(BoundingCircle c, BoundingRectangle r)
         {
+            if (c.Radius == 0) return false;
             float nearestX = MathHelper.Clamp(c.Center.X, r.Left, r.Right);
             float nearestY = MathHelper.Clamp(c.Center.Y, r.Top, r.Bottom);
             return Math.Pow(c.Radius, 2) >=

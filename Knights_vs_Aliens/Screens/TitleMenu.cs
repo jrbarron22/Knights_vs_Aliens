@@ -9,6 +9,7 @@ using System.Linq;
 using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace Knights_vs_Aliens.Screens
@@ -16,6 +17,7 @@ namespace Knights_vs_Aliens.Screens
     public enum menuOptions
     {
         StartGame,
+        LoadGame,
         Controls,
         Exit
     }
@@ -26,11 +28,13 @@ namespace Knights_vs_Aliens.Screens
         private KeyboardState prevKeyboardState;
 
         private switchScreen startPressed;
+        private switchScreen loadGame;
+        private switchScreen controls;
         private quitGame exit;
 
         private menuOptions curMenuOption = menuOptions.StartGame;
 
-        public string[] menuButtons = { "Start Game", "Controls", "Exit" };
+        public string[] menuButtons = { "Start Game", "Load Game", "Controls", "Exit" };
 
         private SpriteFont phudu;
         private AlienOrbSprite[] alienOrbs;
@@ -41,6 +45,8 @@ namespace Knights_vs_Aliens.Screens
         public TitleMenu(switchScreen changeScreen, quitGame exit)
         {
             startPressed = changeScreen;
+            loadGame = changeScreen;
+            controls = changeScreen;
             this.exit = exit;
         }
 
@@ -54,7 +60,6 @@ namespace Knights_vs_Aliens.Screens
             phudu = content.Load<SpriteFont>("phudu");
             foreach (var orb in alienOrbs) orb.LoadContent(content);
             alienTube = content.Load<Texture2D>("Alien Tube");
-            sword = content.Load<Texture2D>("Sword");
             castle = content.Load<Texture2D>("Castle");
         }
 
@@ -67,7 +72,26 @@ namespace Knights_vs_Aliens.Screens
 
             if((curMenuOption == menuOptions.StartGame) && (((curKeyboardState.IsKeyDown(Keys.Space) && prevKeyboardState.IsKeyUp(Keys.Space)) || ((curKeyboardState.IsKeyDown(Keys.Enter)) && prevKeyboardState.IsKeyUp(Keys.Enter)))))
             {
-                startPressed(2);
+                startPressed(ScreenName.OpeningRoom, ScreenName.TitleScreen);
+            }
+            else if ((curMenuOption == menuOptions.LoadGame) && (((curKeyboardState.IsKeyDown(Keys.Space) && prevKeyboardState.IsKeyUp(Keys.Space)) || ((curKeyboardState.IsKeyDown(Keys.Enter)) && prevKeyboardState.IsKeyUp(Keys.Enter)))))
+            {
+                try
+                {
+                    using (StreamReader sr = File.OpenText("SaveState.txt"))
+                    {
+                        int index = int.Parse(sr.ReadLine());
+                        loadGame((ScreenName)index, ScreenName.TitleScreen);
+                    }
+                }
+                catch(FileNotFoundException e)
+                {
+                    return;
+                }
+            }
+            else if ((curMenuOption == menuOptions.Controls) && (((curKeyboardState.IsKeyDown(Keys.Space) && prevKeyboardState.IsKeyUp(Keys.Space)) || ((curKeyboardState.IsKeyDown(Keys.Enter)) && prevKeyboardState.IsKeyUp(Keys.Enter)))))
+            {
+                controls(ScreenName.ControlsScreen, ScreenName.TitleScreen);
             }
             else if ((curMenuOption == menuOptions.Exit) && (((curKeyboardState.IsKeyDown(Keys.Space) && prevKeyboardState.IsKeyUp(Keys.Space)) || ((curKeyboardState.IsKeyDown(Keys.Enter)) && prevKeyboardState.IsKeyUp(Keys.Enter)))))
             {
@@ -81,6 +105,7 @@ namespace Knights_vs_Aliens.Screens
                     case menuOptions.StartGame:
                         break;
                     case menuOptions.Controls:
+                    case menuOptions.LoadGame:
                     case menuOptions.Exit:
                         curMenuOption--;
                         break;
@@ -91,6 +116,7 @@ namespace Knights_vs_Aliens.Screens
                 switch (curMenuOption)
                 {
                     case menuOptions.StartGame:
+                    case menuOptions.LoadGame:
                     case menuOptions.Controls:
                         curMenuOption++;
                         break;
@@ -136,10 +162,6 @@ namespace Knights_vs_Aliens.Screens
             //Draw Castle
             spriteBatch.Draw(castle, new Vector2(graphics.Viewport.Width / 2, 175), null, Color.White, 0, new Vector2(64, 64), 1.0f, SpriteEffects.None, 0);
 
-            //Draw Swords
-            spriteBatch.Draw(sword, new Vector2(graphics.Viewport.Width / 2 + 96, 175), null, Color.White, 0, new Vector2(8, 8), 2.0f, SpriteEffects.None, 0);
-            spriteBatch.Draw(sword, new Vector2(graphics.Viewport.Width / 2 - 128, 175), null, Color.White, 0, new Vector2(8, 8), 2.0f, SpriteEffects.None, 0);
-
             //Draw Exit Instructions
             spriteLength = phudu.MeasureString("Press 'Space' on the Exit button to exit the game");
             spriteBatch.DrawString(phudu, "Press 'Space' on the Exit button to exit the game", new Vector2(graphics.Viewport.Width / 2, graphics.Viewport.Height - 50), Color.Black, 0, new Vector2(spriteLength.X / 2, spriteLength.Y / 2), 0.4f, SpriteEffects.None, 0);
@@ -148,5 +170,7 @@ namespace Knights_vs_Aliens.Screens
         }
 
         public void GameUnpaused() { }
+
+        public void LevelReset() { }
     }
 }

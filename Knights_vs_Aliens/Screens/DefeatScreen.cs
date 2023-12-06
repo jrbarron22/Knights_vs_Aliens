@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Knights_vs_Aliens.Screens
 {
-    public class VictoryScreen : IScreen
+    public class DefeatScreen : IScreen
     {
         private KeyboardState curKeyboardState;
 
@@ -18,7 +18,7 @@ namespace Knights_vs_Aliens.Screens
 
         private switchScreen titleScreen;
 
-        public VictoryScreen(switchScreen changeScreen)
+        public DefeatScreen(switchScreen changeScreen)
         {
             titleScreen = changeScreen;
         }
@@ -34,9 +34,9 @@ namespace Knights_vs_Aliens.Screens
         {
             curKeyboardState = Keyboard.GetState();
 
-            if(curKeyboardState.IsKeyDown(Keys.Enter) || curKeyboardState.IsKeyDown(Keys.Space))
+            if (curKeyboardState.IsKeyDown(Keys.Enter) || curKeyboardState.IsKeyDown(Keys.Space))
             {
-                titleScreen(ScreenName.TitleScreen, ScreenName.VictoryScreen);
+                titleScreen(ScreenName.TitleScreen, ScreenName.DefeatScreen);
             }
         }
 
@@ -47,8 +47,8 @@ namespace Knights_vs_Aliens.Screens
             spriteBatch.Begin();
 
             //Draw Title
-            spriteLength = phudu.MeasureString("Victory!");
-            spriteBatch.DrawString(phudu, "Victory!", new Vector2(graphics.Viewport.Width / 2, 150), Color.Black, 0, new Vector2(spriteLength.X / 2, spriteLength.Y / 2), 1.35f, SpriteEffects.None, 0);
+            spriteLength = phudu.MeasureString("Defeat");
+            spriteBatch.DrawString(phudu, "Defeat", new Vector2(graphics.Viewport.Width / 2, 150), Color.DarkRed, 0, new Vector2(spriteLength.X / 2, spriteLength.Y / 2), 1.35f, SpriteEffects.None, 0);
 
 
             //Draw Exit Instructions

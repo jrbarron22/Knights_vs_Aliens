@@ -1,57 +1,56 @@
-﻿using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Xna.Framework;
+using Tilemap;
 using Knights_vs_Aliens.Sprites;
-using Knights_vs_Aliens.Sprites.Enemies;
+using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Audio;
+using Knights_vs_Aliens.Sprites.Enemies;
 using Knights_vs_Aliens.Collisions;
 
 namespace Knights_vs_Aliens.Screens
 {
-    public class OpeningRoom : IScreen
+    public class SecondRoom : IScreen
     {
+        private Game game;
         private ContentManager content;
+        private GraphicsDevice graphics;
+
+        private switchScreen pause;
+        private switchScreen victory;
+        private switchScreen defeat;
 
         private KnightSprite knight;
 
-        private KeySprite[] keys;
-
-        private AlienTurret[] turrets;
-
         private Tileset tileset;
 
-        private Texture2D background;
-        private SpriteFont phudu;
+        private KeySprite[] keys;
+        private int keysCollected = 0;
+
+        private WallLaser[] lasers;
+        private AlienTurret[] turrets;
 
         private SoundEffect keyPickup;
         private SoundEffect knightHit;
-
-        private int keysCollected = 0;
 
         private BoundingRectangle topBounds;
         private BoundingRectangle bottomBounds;
         private BoundingRectangle leftBounds;
         private BoundingRectangle rightBounds;
 
-        private switchScreen pause;
-        private switchScreen victory;
-        private switchScreen defeat;
-
-        private GraphicsDevice graphics;
-
-        public OpeningRoom(Game game, GraphicsDevice graphics, KnightSprite knight, ContentManager content, switchScreen swapScreen)
+        public SecondRoom(Game game, GraphicsDevice graphics, ContentManager content, switchScreen swapScreen, KnightSprite knight) 
         {
-            Random rand = new Random();
-            this.knight = knight;
+            this.content = content;
+            this.game = game;
             pause = swapScreen;
             victory = swapScreen;
             defeat = swapScreen;
+            this.knight = knight;
             this.graphics = graphics;
             tileset = new Tileset();
 
@@ -62,47 +61,47 @@ namespace Knights_vs_Aliens.Screens
                 new KeySprite(new Vector2(500, 350), Color.Orange)
             };
 
+            lasers = new WallLaser[]{
+                new WallLaser(game, new Vector2(200, 50), content),
+                new WallLaser(game, new Vector2(500, 50), content)
+            };
+
             turrets = new AlienTurret[]
             {
                 new AlienTurret(new Vector2(300, 150), content),
-                new AlienTurret(new Vector2(400, 300), content),
+                new AlienTurret(new Vector2(400, 400), content),
+                new AlienTurret(new Vector2(600, 200), content)
             };
         }
+
         public void LoadContent(GraphicsDevice graphics, ContentManager content)
         {
             tileset = content.Load<Tileset>("tilemap");
-            //background = content.Load<Texture2D>("Dungeon_Tileset");
             foreach (var key in keys) key.LoadContent(content);
-            foreach (var turret in turrets) turret.LoadContent();
             keyPickup = content.Load<SoundEffect>("Pickup_Key");
             knightHit = content.Load<SoundEffect>("Knight_Hit");
-            phudu = content.Load<SpriteFont>("phudu");
+            foreach (var laser in lasers) laser.LoadContent();
+            foreach (var turret in turrets) turret.LoadContent();
 
             InitializeWalls();
-
-            //Walls
-            /*
-            topBounds = new BoundingRectangle(0, 0, (1.5f) * graphics.Viewport.Width, 70);
-            leftBounds = new BoundingRectangle(0, 0, 40, graphics.Viewport.Height);
-            bottomBounds = new BoundingRectangle(0, graphics.Viewport.Height - 50, (1.5f) * graphics.Viewport.Width, 50);
-            rightBounds = new BoundingRectangle(graphics.Viewport.Width + (38 * graphics.Viewport.Height / 65), 0, 45, graphics.Viewport.Height);
-            */
         }
 
         public void Update(GameTime gameTime)
         {
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
             {
-                pause(ScreenName.PauseScreen, ScreenName.OpeningRoom);
+                foreach (var laser in lasers) laser.GamePaused();
+                pause(ScreenName.PauseScreen, ScreenName.SecondRoom);
                 return;
             }
 
             knight.Update(gameTime);
-            
+            knight.color = Color.White;
+
             //Check Knight Collisions with Walls
             if (topBounds.CollidesWith(knight.Bounds))
             {
-                knight.Position.Y = topBounds.Height + (knight.Bounds.Height/2) + 1;
+                knight.Position.Y = topBounds.Height + (knight.Bounds.Height / 2) + 1;
             }
             if (bottomBounds.CollidesWith(knight.Bounds))
             {
@@ -119,7 +118,8 @@ namespace Knights_vs_Aliens.Screens
 
             //Check Knight Collisions with Keys
 
-            foreach (var key in keys) {
+            foreach (var key in keys)
+            {
                 if (!key.Collected && key.Bounds.CollidesWith(knight.Bounds))
                 {
                     key.Collected = true;
@@ -130,51 +130,71 @@ namespace Knights_vs_Aliens.Screens
             }
 
             //Check Win Condition
-            if (keysCollected == 3) victory(ScreenName.SecondRoom, ScreenName.OpeningRoom);
-
-            //Check Knight Collisions with Projectiles
-            foreach (var turret in turrets)
+            if (keysCollected == 3)
             {
-                if (turret.CurHealth != 0)
+                foreach (var laser in lasers) laser.GamePaused();
+                victory(ScreenName.VictoryScreen, ScreenName.SecondRoom);
+            }
+
+            //Check Knight Collisions with Laser
+            foreach (var laser in lasers)
+            {
+                laser.Update(gameTime);
+                if (laser.LaserParticles.IsActive && laser.LaserBounds.CollidesWith(knight.Bounds))
                 {
-                    turret.color = Color.White;
-                    turret.Update(gameTime, knight.Position);
-                    foreach (var projectile in turret.projectiles)
+                    if (!knight.Invulnerable)
                     {
-                        if (projectile.bounds.CollidesWith(knight.Bounds) && !projectile.hasCollided)
-                        {
-                            projectile.hasCollided = true;
-                            if (!knight.Invulnerable)
-                            {
-                                knight.KnightHit(gameTime);
-                                knightHit.Play();
-                            }
-                        }
-                        if (projectile.bounds.CollidesWith(topBounds) || projectile.bounds.CollidesWith(rightBounds) || projectile.bounds.CollidesWith(leftBounds) || projectile.bounds.CollidesWith(bottomBounds))
-                        {
-                            projectile.hasCollided = true;
-                        }
-                    }
-                    //Check Weapon collision with turrets
-                    if (knight.Weapon.IsAttackActive() && knight.Weapon.GetAttackBounds().CollidesWith(turret.Bounds) && !turret.Invulnerable)
-                    {
-                        turret.TurretHit();
+                        knight.KnightHit(gameTime);
+                        knightHit.Play();
                     }
                 }
             }
 
+            
+            foreach (var turret in turrets)
+            {
+                turret.Update(gameTime, knight.Position);
+                foreach (var projectile in turret.projectiles)
+                {
+                    //Check Knight Collisions with Projectiles
+                    if (projectile.bounds.CollidesWith(knight.Bounds))
+                    {
+                        projectile.hasCollided = true;
+                        if (!knight.Invulnerable)
+                        {
+                            knight.color = Color.Red;
+                            knightHit.Play();
+                            knight.CurHealth--;
+                            knight.Invulnerable = true;
+                        }
+                    }
+                    if (projectile.bounds.CollidesWith(topBounds) || projectile.bounds.CollidesWith(rightBounds) || projectile.bounds.CollidesWith(leftBounds) || projectile.bounds.CollidesWith(bottomBounds))
+                    {
+                        projectile.hasCollided = true;
+                    }
+                }
+                //Check Weapon collision with turrets
+                if (knight.Weapon.IsAttackActive() && knight.Weapon.GetAttackBounds().CollidesWith(turret.Bounds) && !turret.Invulnerable)
+                {
+                    turret.TurretHit();
+                }
+            }
+
             //Check Defeat
-            if (knight.CurHealth == 0) defeat(ScreenName.DefeatScreen, ScreenName.OpeningRoom);
+            if (knight.CurHealth == 0) defeat(ScreenName.DefeatScreen, ScreenName.SecondRoom);
         }
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics)
         {
             graphics.Clear(Color.Black);
 
+            //Calculate our offset vector
+            //TODO: Calculate clamp without guessing
+
             spriteBatch.Begin();
             tileset.Draw(gameTime, spriteBatch);
-            
             foreach (var key in keys) key.Draw(gameTime, spriteBatch);
+
             foreach (var turret in turrets)
             {
                 if (turret.CurHealth != 0)
@@ -182,6 +202,8 @@ namespace Knights_vs_Aliens.Screens
                     turret.Draw(gameTime, spriteBatch, graphics);
                 }
             }
+
+                foreach (var laser in lasers) laser.Draw(gameTime, spriteBatch); 
             knight.Draw(gameTime, spriteBatch, graphics);
             spriteBatch.End();
 
@@ -195,11 +217,19 @@ namespace Knights_vs_Aliens.Screens
             spriteBatch.Draw(blankTexture, new Vector2(rightBounds.X, rightBounds.Y), rightBounds.Bounds(), Color.White);
             spriteBatch.Draw(blankTexture, new Vector2(bottomBounds.X, bottomBounds.Y), bottomBounds.Bounds(), Color.White);
             spriteBatch.End();
-             */
+            */
         }
 
         public void GameUnpaused()
         {
+            foreach (var laser in lasers) laser.GameUnpaused();
+        }
+
+        public void LevelReset()
+        {
+            keysCollected = 0;
+            foreach (var key in keys) key.Collected = false;
+            knight.Position = new Vector2(200, 200);
         }
 
         private void InitializeWalls()
@@ -209,13 +239,6 @@ namespace Knights_vs_Aliens.Screens
             leftBounds = new BoundingRectangle(0, 0, 20, tileset.TileHeight * tileset.MapHeight);
             bottomBounds = new BoundingRectangle(0, tileset.TileHeight * tileset.MapHeight - 30, tileset.TileWidth * tileset.MapWidth, 20);
             rightBounds = new BoundingRectangle(tileset.TileWidth * tileset.MapWidth - 20, 0, 20, tileset.TileHeight * tileset.MapHeight);
-        }
-
-        public void LevelReset()
-        {
-            keysCollected = 0;
-            foreach (var key in keys) key.Collected = false;
-            knight.Position = new Vector2(200, 200);
         }
     }
 }

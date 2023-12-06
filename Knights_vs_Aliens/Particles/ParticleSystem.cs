@@ -231,17 +231,19 @@ namespace Knights_vs_Aliens.Particles
         /// Overriden from DrawableGameComponent, Draw will use the static 
         /// SpriteBatch to render all of the active particles.
         /// </summary>
+        /*
         public override void Draw(GameTime gameTime)
         {
             return;
         }
+        */
 
-        public virtual void Draw(GameTime gameTime, Matrix transform)
+        public override void Draw(GameTime gameTime)
         {
             if (!isActive) return;
             // tell sprite batch to begin, using the spriteBlendMode specified in
             // initializeConstants
-            spriteBatch.Begin(blendState: blendState, transformMatrix: transform);
+            spriteBatch.Begin(blendState: blendState);
 
             foreach (Particle p in particles)
             {

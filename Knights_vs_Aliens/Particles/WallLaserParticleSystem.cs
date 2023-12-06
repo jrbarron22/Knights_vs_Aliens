@@ -50,10 +50,5 @@ namespace Knights_vs_Aliens.Particles
 
             if (IsActive) AddParticles(_source);
         }
-
-        public void Draw(GameTime gameTime, Matrix transform)
-        {
-            base.Draw(gameTime, transform);
-        }
     }
 }

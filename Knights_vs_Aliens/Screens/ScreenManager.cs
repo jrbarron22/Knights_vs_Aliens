@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Knights_vs_Aliens.Screens
 {
-    public delegate void switchScreen(int index);
+    public delegate void switchScreen(ScreenName newScreen, ScreenName prevScreen);
 
     public class ScreenManager
     {
@@ -41,21 +41,25 @@ namespace Knights_vs_Aliens.Screens
 
         private void Initialize()
         {
-            //TODO: Make Screens an enum
             knight = new KnightSprite();
-            screens = new IScreen[4];
+            screens = new IScreen[8];
 
-            screens[0] = new TitleMenu(new switchScreen(SwitchScreen), exitGame);
-            screens[1] = new PauseMenu(new switchScreen(SwitchScreen));
-            screens[2] = new OpeningRoom(game, graphics, knight, content, new switchScreen(SwitchScreen));
-            screens[3] = new VictoryScreen(new switchScreen(SwitchScreen));
+            screens[(int)ScreenName.TitleScreen] = new TitleMenu(new switchScreen(SwitchScreen), exitGame);
+            screens[(int)ScreenName.OpeningRoom] = new OpeningRoom(game, graphics, knight, content, new switchScreen(SwitchScreen));
+            screens[(int)ScreenName.VictoryScreen] = new VictoryScreen(new switchScreen(SwitchScreen));
+            screens[(int)ScreenName.SecondRoom] = new SecondRoom(game, graphics, content, new switchScreen(SwitchScreen), knight);
+            screens[(int)ScreenName.ControlsScreen] = new ControlsMenu(new switchScreen(SwitchScreen));
+            screens[(int)ScreenName.DefeatScreen] = new DefeatScreen(new switchScreen(SwitchScreen));
 
-            curScreen = screens[0];
+            curScreen = screens[(int)ScreenName.TitleScreen];
         }
 
         public void LoadContent(GraphicsDevice graphics, ContentManager content)
         {
-            foreach (IScreen screen in screens) screen.LoadContent(graphics, content);
+            foreach (IScreen screen in screens)
+            {
+                if(screen != null) screen.LoadContent(graphics, content);
+            }
             knight.LoadContent(content);
             titleMusic = content.Load<Song>("Denys Kyshchuk - Wide Flower Fields");
             gameplayMusic = content.Load<Song>("Aldous Ichnite - The Rise of the 3D Accelerator");
@@ -73,21 +77,50 @@ namespace Knights_vs_Aliens.Screens
             curScreen.Draw(gameTime, spriteBatch, graphics);
         }
 
-        private void SwitchScreen(int index)
+        private void SwitchScreen(ScreenName newScreen, ScreenName prevScreen)
         {
-            curScreen = screens[index];
-            if(index == 2)
-            {
-                screens[2].GameUnpaused();
-            }
+            
             MediaPlayer.Stop();
-            if (index == 0)
+
+            if(prevScreen == ScreenName.DefeatScreen)
             {
-                MediaPlayer.Play(titleMusic);
+                knight.Reset();
             }
-            if(index == 2)
+
+
+            if ((newScreen == ScreenName.OpeningRoom || newScreen == ScreenName.SecondRoom) && (prevScreen == ScreenName.TitleScreen || prevScreen == ScreenName.OpeningRoom))
+            {
+                //Switching to a gameplay screen but the previous screen is not a loading screen
+                screens[(int)ScreenName.LoadingScreen] = new LoadingScreen(new switchScreen(SwitchScreen), newScreen);
+                screens[(int)ScreenName.LoadingScreen].LoadContent(graphics, content);
+                curScreen = screens[(int)ScreenName.LoadingScreen];
+                return;
+            }
+            else if (newScreen == ScreenName.PauseScreen)
+            {
+                screens[(int)ScreenName.PauseScreen] = new PauseMenu(new switchScreen(SwitchScreen), prevScreen);
+                screens[(int)ScreenName.PauseScreen].LoadContent(graphics, content);
+            }
+
+            //TODO Tie music to the different screens?
+            curScreen = screens[(int)newScreen];
+
+            if (newScreen == ScreenName.OpeningRoom || newScreen == ScreenName.SecondRoom)
             {
                 MediaPlayer.Play(gameplayMusic);
+                if (prevScreen == ScreenName.PauseScreen)
+                {
+                    //Switching to gameplay screen from a loading screen
+                    screens[(int)newScreen].GameUnpaused();
+                }
+                else if(prevScreen == ScreenName.LoadingScreen)
+                {
+                    curScreen.LevelReset();
+                }
+            }
+            else if (newScreen == ScreenName.TitleScreen)
+            {
+                MediaPlayer.Play(titleMusic);
             }
         }
     }

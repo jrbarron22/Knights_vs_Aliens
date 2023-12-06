@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CollisionExample.Collisions
+namespace Knights_vs_Aliens.Collisions
 {
     /// <summary>
     /// A struct representing circular bounds

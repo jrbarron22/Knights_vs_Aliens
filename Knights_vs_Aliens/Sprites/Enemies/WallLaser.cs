@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework.Audio;
 using Knights_vs_Aliens.Particles;
 using System.ComponentModel;
-using CollisionExample.Collisions;
+using Knights_vs_Aliens.Collisions;
 
 namespace Knights_vs_Aliens.Sprites.Enemies
 {
@@ -60,7 +60,7 @@ namespace Knights_vs_Aliens.Sprites.Enemies
             LaserParticles.Update(gameTime);
         }
 
-        public void Draw(GameTime gameTime, SpriteBatch spriteBatch, Matrix transform)
+        public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
             animationTimer += gameTime.ElapsedGameTime.TotalSeconds;
 
@@ -78,10 +78,8 @@ namespace Knights_vs_Aliens.Sprites.Enemies
 
             var source = new Rectangle(animationFrame * 64, 0, 64, 64);
 
-            spriteBatch.Begin(transformMatrix: transform);
             spriteBatch.Draw(texture, Position, source, Color.White, 0, new Vector2(32, 32), 1f, SpriteEffects.None, 0);
-            spriteBatch.End();
-            LaserParticles.Draw(gameTime, transform);
+            LaserParticles.Draw(gameTime);
         }
 
         public void GamePaused()

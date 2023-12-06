@@ -1,4 +1,4 @@
-﻿using CollisionExample.Collisions;
+﻿using Knights_vs_Aliens.Collisions;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;

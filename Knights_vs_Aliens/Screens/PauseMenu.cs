@@ -7,13 +7,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace Knights_vs_Aliens.Screens
 {
     public enum PauseOptions
     {
         Resume,
-        Controls,
+        SaveGame,
         MainMenu
     }
     public class PauseMenu : IScreen
@@ -25,15 +26,19 @@ namespace Knights_vs_Aliens.Screens
 
         private switchScreen resumePressed;
         private switchScreen  mainMenuPressed;
-        private string[] menuButtons = { "Resume", "Controls", "Main Menu" };
+        private string[] menuButtons = { "Resume", "Save Game", "Main Menu" };
 
         private SpriteFont phudu;
         private Texture2D alienTube;
+        private Color tubeColor;
 
-        public PauseMenu(switchScreen changeScreen)
+        private ScreenName prevScreen;
+
+        public PauseMenu(switchScreen changeScreen, ScreenName prevScreen)
         {
             resumePressed = changeScreen;
             mainMenuPressed = changeScreen;
+            this.prevScreen = prevScreen;
         }
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics)
@@ -56,8 +61,8 @@ namespace Knights_vs_Aliens.Screens
 
                 if ((int)curPauseOption == i)
                 {
-                    spriteBatch.Draw(alienTube, new Vector2(graphics.Viewport.Width / 2 - spriteLength.X / 2 - 40, 250 + 50 * i), null, Color.White, 0, new Vector2(16, 16), 2.0f, SpriteEffects.None, 0);
-                    spriteBatch.Draw(alienTube, new Vector2(graphics.Viewport.Width / 2 + spriteLength.X / 2 + 30, 250 + 50 * i), null, Color.White, 0, new Vector2(16, 16), 2.0f, SpriteEffects.None, 0);
+                    spriteBatch.Draw(alienTube, new Vector2(graphics.Viewport.Width / 2 - spriteLength.X / 2 - 40, 250 + 50 * i), null, tubeColor, 0, new Vector2(16, 16), 2.0f, SpriteEffects.None, 0);
+                    spriteBatch.Draw(alienTube, new Vector2(graphics.Viewport.Width / 2 + spriteLength.X / 2 + 30, 250 + 50 * i), null, tubeColor, 0, new Vector2(16, 16), 2.0f, SpriteEffects.None, 0);
                 }
             }
 
@@ -84,14 +89,20 @@ namespace Knights_vs_Aliens.Screens
         {
             prevKeyboardState = curKeyboardState;
             curKeyboardState = Keyboard.GetState();
+            tubeColor = Color.White;
 
             if ((curPauseOption == PauseOptions.Resume) && ((curKeyboardState.IsKeyDown(Keys.Space) || (curKeyboardState.IsKeyDown(Keys.Enter)))))
             {
-                resumePressed(2);
+                resumePressed(prevScreen, ScreenName.PauseScreen);
             }
             else if ((curPauseOption == PauseOptions.MainMenu) && ((curKeyboardState.IsKeyDown(Keys.Space) || (curKeyboardState.IsKeyDown(Keys.Enter)))))
             {
-                mainMenuPressed(0);
+                mainMenuPressed(ScreenName.TitleScreen, ScreenName.PauseScreen);
+            }
+            else if ((curPauseOption == PauseOptions.SaveGame) && ((curKeyboardState.IsKeyDown(Keys.Space) || (curKeyboardState.IsKeyDown(Keys.Enter)))))
+            {
+                SaveGame();
+                tubeColor = Color.Red;
             }
 
             if (curKeyboardState.IsKeyDown(Keys.W) && prevKeyboardState.IsKeyUp(Keys.W))
@@ -100,7 +111,7 @@ namespace Knights_vs_Aliens.Screens
                 {
                     case PauseOptions.Resume:
                         break;
-                    case PauseOptions.Controls:
+                    case PauseOptions.SaveGame:
                     case PauseOptions.MainMenu:
                         curPauseOption--;
                         break;
@@ -112,12 +123,22 @@ namespace Knights_vs_Aliens.Screens
                 {
                     case PauseOptions.MainMenu:
                         break;
-                    case PauseOptions.Controls:
                     case PauseOptions.Resume:
+                    case PauseOptions.SaveGame:
                         curPauseOption++;
                         break;
                 }
             }
         }
+
+        private void SaveGame()
+        {
+            using (StreamWriter sw = File.CreateText("SaveState.txt"))
+            {
+                sw.WriteLine((int)prevScreen);
+            }
+        }
+
+        public void LevelReset() { }
     }
 }
