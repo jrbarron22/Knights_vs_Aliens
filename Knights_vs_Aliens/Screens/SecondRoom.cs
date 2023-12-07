@@ -157,15 +157,12 @@ namespace Knights_vs_Aliens.Screens
                 foreach (var projectile in turret.projectiles)
                 {
                     //Check Knight Collisions with Projectiles
-                    if (projectile.bounds.CollidesWith(knight.Bounds))
+                    if (projectile.bounds.CollidesWith(knight.Bounds) && !projectile.hasCollided)
                     {
                         projectile.hasCollided = true;
                         if (!knight.Invulnerable)
                         {
-                            knight.color = Color.Red;
-                            knightHit.Play();
-                            knight.CurHealth--;
-                            knight.Invulnerable = true;
+                            knight.KnightHit(gameTime);
                         }
                     }
                     if (projectile.bounds.CollidesWith(topBounds) || projectile.bounds.CollidesWith(rightBounds) || projectile.bounds.CollidesWith(leftBounds) || projectile.bounds.CollidesWith(bottomBounds))
@@ -181,7 +178,11 @@ namespace Knights_vs_Aliens.Screens
             }
 
             //Check Defeat
-            if (knight.CurHealth == 0) defeat(ScreenName.DefeatScreen, ScreenName.SecondRoom);
+            if (knight.CurHealth == 0)
+            {
+                foreach (var laser in lasers) laser.GamePaused();
+                defeat(ScreenName.DefeatScreen, ScreenName.SecondRoom);
+            }
         }
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics)
@@ -229,6 +230,7 @@ namespace Knights_vs_Aliens.Screens
         {
             keysCollected = 0;
             foreach (var key in keys) key.Collected = false;
+            foreach (var turret in turrets) turret.CurHealth = 2;
             knight.Position = new Vector2(200, 200);
         }
 

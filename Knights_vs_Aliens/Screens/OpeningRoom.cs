@@ -215,6 +215,7 @@ namespace Knights_vs_Aliens.Screens
         {
             keysCollected = 0;
             foreach (var key in keys) key.Collected = false;
+            foreach (var turret in turrets) turret.CurHealth = 2;
             knight.Position = new Vector2(200, 200);
         }
     }
