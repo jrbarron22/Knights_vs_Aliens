@@ -59,7 +59,7 @@ namespace Knights_vs_Aliens.Rooms
             InitializeDoorBoxes();
         }
 
-        public void Update(GameTime gameTime)
+        public void Update(GameTime gameTime, List<KeyValuePair<Direction, BoundingRectangle>> walls)
         {
             //Check Knight collision with Keys
             foreach (var key in keys)
@@ -84,5 +84,8 @@ namespace Knights_vs_Aliens.Rooms
             //Right Door
             DoorBoxes.Add(Direction.Right, new BoundingRectangle(tileset.TileWidth * tileset.MapWidth - 20, tileset.TileHeight * 6, 20, tileset.TileHeight * 3));
         }
+
+        public void GamePaused() { }
+        public void GameUnpaused() { }
     }
 }

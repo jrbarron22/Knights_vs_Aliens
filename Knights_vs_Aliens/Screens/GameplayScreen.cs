@@ -1,17 +1,12 @@
-﻿using CppNet;
-using Knights_vs_Aliens.Collisions;
+﻿using Knights_vs_Aliens.Collisions;
 using Knights_vs_Aliens.Rooms;
 using Knights_vs_Aliens.Sprites;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Reflection.Metadata.Ecma335;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Knights_vs_Aliens.Screens
 {
@@ -52,34 +47,33 @@ namespace Knights_vs_Aliens.Screens
             victory = changeScreen;
             defeat = changeScreen;
 
-            //Has to have more than 5 rooms
-            numRooms = rand.Next(2) + 11;
-            pickedRooms = new List<int[]> { new int[] { 2, 2 } };
-            availableRooms = new List<int[]> { new int[] { 2, 2 } };
+            //This might break the rules calling load outside of Load Content
+            //But I need the tilemap during initialization
+            tileset = content.Load<Tileset>("tilemap");
+            LevelReset();
         }
 
         public void LoadContent(GraphicsDevice graphics, ContentManager content)
         {
-            tileset = content.Load<Tileset>("tilemap");
+            
             doorTexture = content.Load<Texture2D>("Dungeon_Tileset_Rescaled");
-            openingRoom = pickedRooms[0];
-            roomGrid[openingRoom[0], openingRoom[1]] = new OpeningRoom(knight, tileset);
-            curRoom = roomGrid[openingRoom[0], openingRoom[1]];
-            CreateFloorLayout(numRooms - 1, 2);
-            CreateDoors();
 
-            foreach (var room in pickedRooms)
-            {
-                roomGrid[room[0], room[1]].LoadContent(graphics, content);
-            }
             
             InitializeWalls();
         }
 
         public void Update(GameTime gameTime)
         {
+            if (Keyboard.GetState().IsKeyDown(Keys.Escape))
+            {
+                curRoom.GamePaused();
+                pause(ScreenName.PauseScreen, ScreenName.GameplayScreen);
+                
+                return;
+            }
+
             knight.Update(gameTime);
-            curRoom.Update(gameTime);
+            curRoom.Update(gameTime, walls);
 
             //Wall-Knight collisions
             foreach (var wall in walls)
@@ -115,9 +109,24 @@ namespace Knights_vs_Aliens.Screens
                             knight.Position = new Vector2(tileset.TileWidth + knight.Bounds.Width + 20, 240);
                             break;
                     }
+                    curRoom.GamePaused(); //Stops lasers
                     curRoom = roomGrid[curRoom.Doors[door.Key][0], curRoom.Doors[door.Key][1]];
                     break;
                 }
+            }
+
+            //Check Win Condition
+            if (knight.KeysCollected == 3)
+            {
+                curRoom.GamePaused();
+                victory(ScreenName.VictoryScreen, ScreenName.GameplayScreen);
+            }
+
+            //Check Defeat
+            if (knight.CurHealth == 0)
+            {
+                curRoom.GamePaused();
+                defeat(ScreenName.DefeatScreen, ScreenName.GameplayScreen);
             }
         }
 
@@ -190,11 +199,27 @@ namespace Knights_vs_Aliens.Screens
 
         public void GameUnpaused()
         {
-            throw new NotImplementedException();
+            curRoom.GameUnpaused();
         }
 
         public void LevelReset()
         {
+            knight.Reset();
+            roomGrid = new IGameplayRoom[5, 5];
+            //Has to have more than 5 rooms
+            numRooms = rand.Next(2) + 11;
+            pickedRooms = new List<int[]> { new int[] { 2, 2 } };
+            availableRooms = new List<int[]> { new int[] { 2, 2 } };
+            openingRoom = pickedRooms[0];
+            roomGrid[openingRoom[0], openingRoom[1]] = new OpeningRoom(knight, tileset);
+            curRoom = roomGrid[openingRoom[0], openingRoom[1]];
+            CreateFloorLayout(numRooms - 1, 2);
+            CreateDoors();
+
+            foreach (var room in pickedRooms)
+            {
+                roomGrid[room[0], room[1]].LoadContent(graphics, content);
+            }
         }
 
         private void HandleBoundaryCollisions(Direction curDirection)

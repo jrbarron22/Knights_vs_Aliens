@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Knights_vs_Aliens.Rooms
@@ -27,7 +28,7 @@ namespace Knights_vs_Aliens.Rooms
 
         private bool[,] tileArray = new bool[25, 15];
 
-        public bool AreDoorsOpen { get; set; } = true;
+        public bool AreDoorsOpen { get; set; } = false;
 
         Random rand = new Random();
 
@@ -90,7 +91,7 @@ namespace Knights_vs_Aliens.Rooms
             if (key != null) key.LoadContent(content);
         }
 
-        public void Update(GameTime gameTime)
+        public void Update(GameTime gameTime, List<KeyValuePair<Direction, BoundingRectangle>> walls)
         {
             //Check Knight Collisions with Laser
             foreach (var laser in wallLasers)
@@ -106,34 +107,42 @@ namespace Knights_vs_Aliens.Rooms
                 }
             }
 
+            int numTurretsDead = 0;
             foreach (var turret in alienTurrets)
             {
-                turret.Update(gameTime, knight.Position);
-                foreach (var projectile in turret.projectiles)
+                if (turret.CurHealth == 0) numTurretsDead++;
+                else
                 {
-                    //Check Knight Collisions with Projectiles
-                    if (projectile.bounds.CollidesWith(knight.Bounds) && !projectile.hasCollided)
+                    turret.Update(gameTime, knight.Position);
+                    foreach (var projectile in turret.projectiles)
                     {
-                        projectile.hasCollided = true;
-                        if (!knight.Invulnerable)
+                        //Check Knight Collisions with Projectiles
+                        if (projectile.bounds.CollidesWith(knight.Bounds) && !projectile.hasCollided)
                         {
-                            knight.KnightHit(gameTime);
+                            projectile.hasCollided = true;
+                            if (!knight.Invulnerable)
+                            {
+                                knight.KnightHit(gameTime);
+                            }
                         }
+                        //Check Bullet collisions with walls
+                        foreach (var wall in walls)
+                        {
+                            if (wall.Value.CollidesWith(projectile.bounds))
+                            {
+                                projectile.hasCollided = true;
+                            }
+                        }                        
                     }
-                    //Check Bullet collisions with walls
-                    /*
-                    if (projectile.bounds.CollidesWith(topBounds) || projectile.bounds.CollidesWith(rightBounds) || projectile.bounds.CollidesWith(leftBounds) || projectile.bounds.CollidesWith(bottomBounds))
+                    //Check Weapon collision with turrets
+                    if (knight.Weapon.IsAttackActive() && knight.Weapon.GetAttackBounds().CollidesWith(turret.Bounds) && !turret.Invulnerable)
                     {
-                        projectile.hasCollided = true;
+                        turret.TurretHit();
                     }
-                    */
-                }
-                //Check Weapon collision with turrets
-                if (knight.Weapon.IsAttackActive() && knight.Weapon.GetAttackBounds().CollidesWith(turret.Bounds) && !turret.Invulnerable)
-                {
-                    turret.TurretHit();
                 }
             }
+
+            if (numTurretsDead == alienTurrets.Length) AreDoorsOpen = true;
 
             if (key != null)
             {
@@ -166,13 +175,14 @@ namespace Knights_vs_Aliens.Rooms
                 for (int y = 0; y < tileset.MapHeight; y++)
                 {
                     //Boundaries
-                    if (x == 0 || x == 24 || y == 14) tileArray[x, y] = false;
+                    if (x == 0 || x == 24 || y == 14) tileArray[x, y] = true;
                     //Left Door
-                    if (x > 0 && x <= 3 && y >= 6 && y <= 8) tileArray[x, y] = false;
+                    else if (x > 0 && x <= 3 && y >= 6 && y <= 8) tileArray[x, y] = true;
                     //Right Door
-                    if (x >= 22 && x < 24 && y >= 6 && y <= 8) tileArray[x, y] = false;
+                    else if (x >= 22 && x < 24 && y >= 6 && y <= 8) tileArray[x, y] = true;
                     //Top and Bottom Door
-                    if ((x >= 12 && x <= 14) && ((y >= 0 && y <= 5) || (y <= 14 && y >= 12))) tileArray[x, y] = false;
+                    else if ((x >= 12 && x <= 14) && ((y >= 0 && y <= 5) || (y <= 14 && y >= 12))) tileArray[x, y] = true;
+                    else tileArray[x, y] = false;
                 }
             }
         }
@@ -224,6 +234,14 @@ namespace Knights_vs_Aliens.Rooms
             }
         }
 
+        public void GamePaused()
+        {
+            foreach (var laser in wallLasers) laser.GamePaused();
+        }
 
+        public void GameUnpaused()
+        {
+            foreach (var laser in wallLasers) laser.GameUnpaused();
+        }
     }
 }

@@ -17,7 +17,10 @@ namespace Knights_vs_Aliens.Rooms
         Dictionary<Direction, BoundingRectangle> DoorBoxes { get; set; }
         bool AreDoorsOpen { get; set; }
         void LoadContent(GraphicsDevice graphics, ContentManager content);
-        void Update(GameTime gameTime);
+        void Update(GameTime gameTime, List<KeyValuePair<Direction, BoundingRectangle>> walls);
         void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics);
+
+        void GamePaused();
+        void GameUnpaused();
     }
 }

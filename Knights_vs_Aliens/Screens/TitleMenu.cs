@@ -17,7 +17,6 @@ namespace Knights_vs_Aliens.Screens
     public enum menuOptions
     {
         StartGame,
-        LoadGame,
         Controls,
         Exit
     }
@@ -34,7 +33,7 @@ namespace Knights_vs_Aliens.Screens
 
         private menuOptions curMenuOption = menuOptions.StartGame;
 
-        public string[] menuButtons = { "Start Game", "Load Game", "Controls", "Exit" };
+        public string[] menuButtons = { "Start Game", "Controls", "Exit" };
 
         private SpriteFont phudu;
         private AlienOrbSprite[] alienOrbs;
@@ -74,6 +73,7 @@ namespace Knights_vs_Aliens.Screens
             {
                 startPressed(ScreenName.GameplayScreen, ScreenName.TitleScreen);
             }
+            /*
             else if ((curMenuOption == menuOptions.LoadGame) && (((curKeyboardState.IsKeyDown(Keys.Space) && prevKeyboardState.IsKeyUp(Keys.Space)) || ((curKeyboardState.IsKeyDown(Keys.Enter)) && prevKeyboardState.IsKeyUp(Keys.Enter)))))
             {
                 try
@@ -89,6 +89,7 @@ namespace Knights_vs_Aliens.Screens
                     return;
                 }
             }
+            */
             else if ((curMenuOption == menuOptions.Controls) && (((curKeyboardState.IsKeyDown(Keys.Space) && prevKeyboardState.IsKeyUp(Keys.Space)) || ((curKeyboardState.IsKeyDown(Keys.Enter)) && prevKeyboardState.IsKeyUp(Keys.Enter)))))
             {
                 controls(ScreenName.ControlsScreen, ScreenName.TitleScreen);
@@ -105,7 +106,6 @@ namespace Knights_vs_Aliens.Screens
                     case menuOptions.StartGame:
                         break;
                     case menuOptions.Controls:
-                    case menuOptions.LoadGame:
                     case menuOptions.Exit:
                         curMenuOption--;
                         break;
@@ -116,7 +116,6 @@ namespace Knights_vs_Aliens.Screens
                 switch (curMenuOption)
                 {
                     case menuOptions.StartGame:
-                    case menuOptions.LoadGame:
                     case menuOptions.Controls:
                         curMenuOption++;
                         break;

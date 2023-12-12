@@ -83,11 +83,10 @@ namespace Knights_vs_Aliens.Screens
             
             MediaPlayer.Stop();
 
-            if(prevScreen == ScreenName.DefeatScreen)
+            if(prevScreen == ScreenName.DefeatScreen || prevScreen == ScreenName.VictoryScreen)
             {
-                knight.Reset();
+                screens[(int)ScreenName.GameplayScreen].LevelReset();
             }
-
 
             if ((newScreen == ScreenName.GameplayScreen) && (prevScreen == ScreenName.TitleScreen))
             {
@@ -113,10 +112,6 @@ namespace Knights_vs_Aliens.Screens
                 {
                     //Switching to gameplay screen from a loading screen
                     screens[(int)newScreen].GameUnpaused();
-                }
-                else if(prevScreen == ScreenName.LoadingScreen)
-                {
-                    curScreen.LevelReset();
                 }
             }
             else if (newScreen == ScreenName.TitleScreen)

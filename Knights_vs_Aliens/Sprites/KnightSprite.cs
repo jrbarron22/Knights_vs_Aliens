@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Knights_vs_Aliens.Collisions;
 using Knights_vs_Aliens.Sprites.Weapons;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -23,7 +24,7 @@ namespace Knights_vs_Aliens.Sprites
 
         private const float SCALE = 1.5f;
 
-        public Vector2 Position;
+        public Vector2 Position = new Vector2(400, 360);
 
         public int CurHealth = 3;
 
@@ -38,10 +39,10 @@ namespace Knights_vs_Aliens.Sprites
         private SpriteFont phudu;
 
         private Texture2D knight;
-
         private Texture2D heartTexture;
-
         private Texture2D blankTexture;
+
+        private SoundEffect knightHit;
 
         public bool Invulnerable = false;
 
@@ -72,6 +73,7 @@ namespace Knights_vs_Aliens.Sprites
             debugRectangle = content.Load<Texture2D>("Debug_Rectangle");
             heartTexture = content.Load<Texture2D>("Heart");
             phudu = content.Load<SpriteFont>("phudu");
+            knightHit = content.Load<SoundEffect>("Knight_Hit");
             Weapon.LoadContent(content);
         }
         public void Update(GameTime gameTime)
@@ -308,6 +310,7 @@ namespace Knights_vs_Aliens.Sprites
         public void KnightHit(GameTime gameTime)
         {
             color = Color.Red;
+            knightHit.Play();
             CurHealth--;
             invulnerabilityTimer = 0.50;
             Invulnerable = true;
@@ -316,6 +319,7 @@ namespace Knights_vs_Aliens.Sprites
         public void Reset()
         {
             CurHealth = 3;
+            KeysCollected = 0;
         }
     }
 }
