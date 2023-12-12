@@ -91,7 +91,7 @@ namespace Knights_vs_Aliens.Screens
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
             {
                 foreach (var laser in lasers) laser.GamePaused();
-                pause(ScreenName.PauseScreen, ScreenName.SecondRoom);
+                //pause(ScreenName.PauseScreen, ScreenName.SecondRoom);
                 return;
             }
 
@@ -133,7 +133,7 @@ namespace Knights_vs_Aliens.Screens
             if (keysCollected == 3)
             {
                 foreach (var laser in lasers) laser.GamePaused();
-                victory(ScreenName.VictoryScreen, ScreenName.SecondRoom);
+                //victory(ScreenName.VictoryScreen, ScreenName.SecondRoom);
             }
 
             //Check Knight Collisions with Laser
@@ -181,7 +181,7 @@ namespace Knights_vs_Aliens.Screens
             if (knight.CurHealth == 0)
             {
                 foreach (var laser in lasers) laser.GamePaused();
-                defeat(ScreenName.DefeatScreen, ScreenName.SecondRoom);
+                //defeat(ScreenName.DefeatScreen, ScreenName.SecondRoom);
             }
         }
 
@@ -204,7 +204,7 @@ namespace Knights_vs_Aliens.Screens
                 }
             }
 
-                foreach (var laser in lasers) laser.Draw(gameTime, spriteBatch); 
+            foreach (var laser in lasers) laser.Draw(gameTime, spriteBatch); 
             knight.Draw(gameTime, spriteBatch, graphics);
             spriteBatch.End();
 

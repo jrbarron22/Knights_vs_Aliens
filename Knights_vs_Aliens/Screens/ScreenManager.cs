@@ -42,12 +42,13 @@ namespace Knights_vs_Aliens.Screens
         private void Initialize()
         {
             knight = new KnightSprite();
-            screens = new IScreen[8];
+            screens = new IScreen[7];
 
             screens[(int)ScreenName.TitleScreen] = new TitleMenu(new switchScreen(SwitchScreen), exitGame);
-            screens[(int)ScreenName.OpeningRoom] = new OpeningRoom(game, graphics, knight, content, new switchScreen(SwitchScreen));
+            //screens[(int)ScreenName.OpeningRoom] = new OpeningRoom(game, graphics, knight, content, new switchScreen(SwitchScreen));
             screens[(int)ScreenName.VictoryScreen] = new VictoryScreen(new switchScreen(SwitchScreen));
-            screens[(int)ScreenName.SecondRoom] = new SecondRoom(game, graphics, content, new switchScreen(SwitchScreen), knight);
+            screens[(int)ScreenName.GameplayScreen] = new GameplayScreen(game, graphics, knight, content, new switchScreen(SwitchScreen));
+            //screens[(int)ScreenName.SecondRoom] = new SecondRoom(game, graphics, content, new switchScreen(SwitchScreen), knight);
             screens[(int)ScreenName.ControlsScreen] = new ControlsMenu(new switchScreen(SwitchScreen));
             screens[(int)ScreenName.DefeatScreen] = new DefeatScreen(new switchScreen(SwitchScreen));
 
@@ -88,7 +89,7 @@ namespace Knights_vs_Aliens.Screens
             }
 
 
-            if ((newScreen == ScreenName.OpeningRoom || newScreen == ScreenName.SecondRoom) && (prevScreen == ScreenName.TitleScreen || prevScreen == ScreenName.OpeningRoom))
+            if ((newScreen == ScreenName.GameplayScreen) && (prevScreen == ScreenName.TitleScreen))
             {
                 //Switching to a gameplay screen but the previous screen is not a loading screen
                 screens[(int)ScreenName.LoadingScreen] = new LoadingScreen(new switchScreen(SwitchScreen), newScreen);
@@ -105,7 +106,7 @@ namespace Knights_vs_Aliens.Screens
             //TODO Tie music to the different screens?
             curScreen = screens[(int)newScreen];
 
-            if (newScreen == ScreenName.OpeningRoom || newScreen == ScreenName.SecondRoom)
+            if (newScreen == ScreenName.GameplayScreen)
             {
                 MediaPlayer.Play(gameplayMusic);
                 if (prevScreen == ScreenName.PauseScreen)

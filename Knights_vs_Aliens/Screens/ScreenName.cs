@@ -14,7 +14,6 @@ namespace Knights_vs_Aliens.Screens
         DefeatScreen,
         LoadingScreen,
         ControlsScreen,
-        OpeningRoom,
-        SecondRoom
+        GameplayScreen
     }
 }

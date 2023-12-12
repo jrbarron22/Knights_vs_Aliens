@@ -34,11 +34,8 @@ namespace Knights_vs_Aliens.Screens
             string text = "";
             switch (screenToSwitchTo)
             {
-                case ScreenName.OpeningRoom: 
-                    text = "Level 1";
-                    break;
-                case ScreenName.SecondRoom:
-                    text = "Level 2";
+                case ScreenName.GameplayScreen: 
+                    text = "Defend the Castle!";
                     break;
                 default:
                     text = "Loading";

@@ -29,6 +29,8 @@ namespace Knights_vs_Aliens.Sprites
 
         private int maxHealth = 3;
 
+        public int KeysCollected = 0;
+
         private Direction direction;
 
         public IWeapon Weapon;

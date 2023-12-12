@@ -72,7 +72,7 @@ namespace Knights_vs_Aliens.Screens
 
             if((curMenuOption == menuOptions.StartGame) && (((curKeyboardState.IsKeyDown(Keys.Space) && prevKeyboardState.IsKeyUp(Keys.Space)) || ((curKeyboardState.IsKeyDown(Keys.Enter)) && prevKeyboardState.IsKeyUp(Keys.Enter)))))
             {
-                startPressed(ScreenName.OpeningRoom, ScreenName.TitleScreen);
+                startPressed(ScreenName.GameplayScreen, ScreenName.TitleScreen);
             }
             else if ((curMenuOption == menuOptions.LoadGame) && (((curKeyboardState.IsKeyDown(Keys.Space) && prevKeyboardState.IsKeyUp(Keys.Space)) || ((curKeyboardState.IsKeyDown(Keys.Enter)) && prevKeyboardState.IsKeyUp(Keys.Enter)))))
             {
